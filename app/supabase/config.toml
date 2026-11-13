@@ -1,0 +1,98 @@
+project_id = "xiaozhuwork"
+
+[api]
+enabled = true
+schemas = ["public", "storage"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[db.migrations]
+enabled = true
+schema_paths = []
+
+[db.seed]
+enabled = false
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["http://127.0.0.1:5173"]
+jwt_expiry = 3600
+enable_signup = true
+minimum_password_length = 8
+password_requirements = ""
+
+[auth.rate_limit]
+sign_in_sign_ups = 30
+token_verifications = 30
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+secure_password_change = true
+max_frequency = "1m"
+otp_length = 6
+otp_expiry = 600
+
+[auth.email.template.confirmation]
+subject = "小猪作业登录验证码"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.magic_link]
+subject = "小猪作业登录验证码"
+content_path = "./supabase/templates/confirmation.html"
+
+[storage]
+enabled = true
+file_size_limit = "200MiB"
+
+[analytics]
+enabled = false
+
+[edge_runtime]
+enabled = true
+policy = "per_worker"
+
+[functions.finalize-task-file-upload]
+verify_jwt = true
+
+[functions.export-project-report]
+verify_jwt = true
+
+[functions.export-enhanced-project-report]
+verify_jwt = true
+static_files = [
+  "./functions/_shared/fonts/NotoSansSC-wght.ttf",
+  "./functions/_shared/fonts/OFL.txt",
+]
+
+[functions.cross-project-analytics]
+verify_jwt = true
+
+[functions.dispatch-contribution-penalties]
+verify_jwt = true
+
+[functions.process-file-withdrawals]
+verify_jwt = true
+
+[functions.lifecycle-worker]
+verify_jwt = true
+
+[functions.analytics-rollup]
+verify_jwt = true
+
+[functions.ops-api]
+verify_jwt = true
+
+[functions.ai-task-breakdown]
+verify_jwt = true
+# Only the secret-token calendar feed uses an unauthenticated JWT-off HTTP route.
+# Authorization is enforced against the stored hash and current issuer rights.
+[functions.calendar-feed]
+verify_jwt = false

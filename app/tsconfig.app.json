@@ -1,0 +1,21 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": [
+    "env.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src-shared/**/*.ts",
+    "tests/**/*.ts"
+  ],
+  "exclude": ["tests/unit/ops-*.spec.ts"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@shared/*": ["./src-shared/*"],
+      "@shared/telemetry": ["./src-shared/telemetry/index.ts"]
+    },
+    "types": ["vitest/globals"]
+  }
+}

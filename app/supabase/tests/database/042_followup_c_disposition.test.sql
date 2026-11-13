@@ -1,0 +1,24 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+select plan(18);
+select has_table('public','task_responsibility_epochs','C epochs exist');
+select has_table('public','task_first_submission_facts','C first submission facts exist');
+select has_table('public','file_version_withdrawals','C withdrawal intent exists');
+select has_function('public','cmd_cancel_task',array['uuid','uuid','text','uuid','integer'],'cancel rpc');
+select has_function('public','cmd_abandon_task_responsibility',array['uuid','uuid','text','uuid','integer'],'abandon rpc');
+select has_function('public','cmd_delete_empty_task',array['uuid','uuid','uuid','integer'],'empty delete rpc');
+select has_function('public','cmd_withdraw_file_version',array['uuid','uuid','text','uuid','integer'],'withdraw rpc');
+select has_function('public','cmd_complete_file_version_withdrawal_service',array['uuid'],'service completion rpc');
+select has_function('private','followup_open_responsibility_epoch',array['uuid','uuid','uuid','timestamp with time zone','text'],'epoch hook');
+select has_function('private','followup_record_first_submission',
+ array['uuid','uuid','uuid','uuid','uuid','timestamp with time zone','integer'],'first submit hook');
+select ok((select relrowsecurity from pg_class where oid='public.task_responsibility_epochs'::regclass),'epoch RLS');
+select ok((select relrowsecurity from pg_class where oid='public.task_first_submission_facts'::regclass),'first fact RLS');
+select ok((select relrowsecurity from pg_class where oid='public.file_version_withdrawals'::regclass),'withdrawal RLS');
+select ok(not has_table_privilege('authenticated','public.task_responsibility_epochs','INSERT'),'no forged epochs');
+select ok(not has_table_privilege('authenticated','public.task_first_submission_facts','INSERT'),'no forged first submission');
+select ok(not has_table_privilege('authenticated','public.file_version_withdrawals','UPDATE'),'no client completing withdrawal');
+select ok(not has_function_privilege('authenticated','public.cmd_complete_file_version_withdrawal_service(uuid)','EXECUTE'),'service function private to clients');
+select ok(has_function_privilege('authenticated','public.cmd_withdraw_file_version(uuid,uuid,text,uuid,integer)','EXECUTE'),'user withdraw RPC accessible');
+select * from finish();
+rollback;

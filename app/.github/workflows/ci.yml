@@ -1,0 +1,145 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm typecheck:ops
+      - run: pnpm test
+      - run: pnpm test:ops
+      - run: pnpm build
+      - run: pnpm build:ops
+      - name: Scan Ops browser bundle for privileged credential markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -E 'SUPABASE_SERVICE_ROLE_KEY|SERVICE_ROLE|service-role-secret|sb_secret_[A-Za-z0-9_-]{8,}' dist-ops; then
+            echo 'dist-ops contains a privileged credential marker'
+            exit 1
+          fi
+      - name: Start local Supabase
+        run: pnpm db:start
+      - name: Replay migrations on an empty database
+        run: pnpm db:reset
+      - name: Run pgTAP database tests
+        run: pnpm db:test
+      - name: Run multi-connection concurrency tests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          isolated_root="$RUNNER_TEMP/xiaozhuwork-p2-g-ci"
+          rm -rf "$isolated_root"
+          mkdir -p "$isolated_root"
+          cp -R supabase "$isolated_root/supabase"
+
+          python3 - "$isolated_root/supabase/config.toml" <<'PY'
+          from pathlib import Path
+          import sys
+
+          config = Path(sys.argv[1])
+          text = config.read_text(encoding="utf-8")
+          replacements = (
+              ('project_id = "xiaozhuwork"', 'project_id = "xiaozhuwork_p2_g_ci"'),
+              ("port = 54322", "port = 55512"),
+              ("shadow_port = 54320", "shadow_port = 55510"),
+          )
+          for old, new in replacements:
+              if text.count(old) != 1:
+                  raise SystemExit(f"expected exactly one {old!r} in {config}")
+              text = text.replace(old, new)
+          config.write_text(text, encoding="utf-8")
+          PY
+
+          cleanup() {
+            pnpm exec supabase stop --workdir "$isolated_root" --no-backup --yes               >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          pnpm exec supabase start             --workdir "$isolated_root"             --exclude gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor             --yes
+          pnpm exec supabase db reset             --workdir "$isolated_root"             --no-seed
+
+          export SUPABASE_DB_URL="postgresql://postgres:postgres@127.0.0.1:55512/postgres"
+          pnpm exec vitest run --config vitest.db.config.ts             tests/database/day4-concurrency.spec.ts             tests/database/capability-concurrency.spec.ts             tests/database/command-concurrency.spec.ts             tests/database/pro-quota-concurrency.spec.ts             tests/database/task-help-rework-concurrency.spec.ts             tests/database/account-pro-entitlement-concurrency.spec.ts             tests/database/artifact-binding-concurrency.spec.ts             tests/database/unified-task-submission-concurrency.spec.ts             tests/database/file-history-batch-rollback-concurrency.spec.ts             tests/database/task-collaborator-concurrency.spec.ts             tests/database/task-change-confirmation-concurrency.spec.ts             tests/database/recovery-point-concurrency.spec.ts             tests/database/task-dependency-concurrency.spec.ts             tests/database/notifications-concurrency.spec.ts             tests/database/product-analytics-concurrency.spec.ts
+
+          export XIAOZHUWORK_G_INTEGRATION_TEST=1
+          export F_TEST_DB_URL="$SUPABASE_DB_URL"
+          export XIAOZHUWORK_CALENDAR_TEST_DATABASE_URL="$SUPABASE_DB_URL"
+          export XIAOZHUWORK_F_LIFECYCLE_DB_URL="$SUPABASE_DB_URL"
+          export XIAOZHUWORK_F2_PRIVACY_DB_URL="$SUPABASE_DB_URL"
+          pnpm exec vitest run --config vitest.db.config.ts --maxWorkers=1             tests/database/pro-phase2-storage-concurrency.spec.ts             tests/database/pro-phase2-project-analytics-concurrency.spec.ts             tests/database/pro-phase2-permissions-concurrency.spec.ts             tests/database/pro-phase2-calendar-feed-concurrency.spec.ts             tests/database/pro-phase2-cross-project-concurrency.spec.ts             tests/database/pro-phase2-g-cf-concurrency.spec.ts             tests/database/pro-phase2-g-enhanced-report-concurrency.spec.ts             tests/database/pro-phase2-g-large-storage-concurrency.spec.ts             tests/database/account-lifecycle-concurrency.spec.ts             tests/database/f2-privacy-concurrency.spec.ts
+      - name: Check generated database types
+        run: pnpm db:types:check
+
+      - name: Run Ops and analytics real HTTP integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          set -a
+          eval "$(pnpm exec supabase status -o env)"
+          set +a
+          export SUPABASE_URL="$API_URL"
+          export SUPABASE_SERVICE_ROLE_KEY="$SERVICE_ROLE_KEY"
+          export SUPABASE_DB_URL="$DB_URL"
+          export OPS_HTTP_TEST_ALLOW_LOCAL=1
+
+          edge_env="$RUNNER_TEMP/xiaozhuwork-beta-edge.env"
+          printf '%s\n'             'OPS_ALLOWED_ORIGINS=http://127.0.0.1:5174,http://localhost:5174'             >"$edge_env"
+          chmod 600 "$edge_env"
+
+          edge_log="$RUNNER_TEMP/xiaozhuwork-beta-edge.log"
+          pnpm exec supabase functions serve --env-file "$edge_env" >"$edge_log" 2>&1 &
+          edge_pid=$!
+          cleanup_edge() {
+            kill "$edge_pid" >/dev/null 2>&1 || true
+            wait "$edge_pid" >/dev/null 2>&1 || true
+          }
+          trap cleanup_edge EXIT
+
+          ready=0
+          for _ in $(seq 1 30); do
+            status_code="$(curl --silent --output /dev/null --write-out '%{http_code}'               -H "apikey: $ANON_KEY"               -H 'origin: http://127.0.0.1:5174'               -H 'content-type: application/json'               --data '{"action":"access"}'               "$API_URL/functions/v1/ops-api" || true)"
+            if [[ "$status_code" == "401" ]]; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [[ "$ready" != 1 ]]; then
+            cat "$edge_log"
+            exit 1
+          fi
+
+          node tests/integration/ops-api-http.mjs
+          node tests/integration/analytics-rollup-http.mjs
+
+      # Run browser smoke after independent database/security gates so failures
+      # in a long two-account E2E cannot mask migration/pgTAP/concurrency results.
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+      # The exhaustive dark-theme audit stays in the dedicated visual-review
+      # pass. Regular browser smoke remains serial because it shares one
+      # disposable local Supabase fixture.
+      - name: Run browser smoke tests
+        run: pnpm exec playwright test --grep-invert 'dark mode visual audit of every primary route' --workers=1
+      - name: Verify browser telemetry privacy
+        run: pnpm exec playwright test --config playwright.obs.config.ts --workers=1

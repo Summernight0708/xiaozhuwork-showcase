@@ -1,0 +1,171 @@
+/* Hallmark · XiaozhuWork locked tokens · modern-minimal Workbench */
+:root {
+  --color-paper: oklch(96.8% 0.012 82);
+  --color-paper-2: oklch(98.2% 0.009 82);
+  --color-paper-3: oklch(94.7% 0.014 82);
+  --color-rule: oklch(84.4% 0.012 82);
+  --color-rule-strong: oklch(73% 0.014 82);
+  --color-muted: oklch(47% 0.018 90);
+  --color-ink-2: oklch(31% 0.015 82);
+  --color-ink: oklch(20% 0.014 82);
+  --color-accent: oklch(48% 0.075 158);
+  --color-accent-hover: oklch(42% 0.072 158);
+  --color-accent-active: oklch(36% 0.068 158);
+  --color-accent-soft: oklch(92.7% 0.022 158);
+  --color-accent-ink: oklch(98% 0.006 82);
+  --color-focus: oklch(58% 0.09 158);
+  --color-danger: oklch(52% 0.15 28);
+  --color-danger-soft: oklch(94% 0.03 28);
+  --color-danger-ink: oklch(39% 0.12 28);
+  --color-warning: oklch(55% 0.11 65);
+  --color-warning-soft: oklch(94.5% 0.035 75);
+  --color-warning-ink: oklch(42% 0.1 62);
+  --color-success: oklch(48% 0.09 150);
+  --color-success-soft: oklch(93.2% 0.028 150);
+  --color-success-ink: oklch(38% 0.075 150);
+  --color-star: oklch(57% 0.12 70);
+  --color-chart-primary: oklch(52% 0.075 158);
+  --color-chart-secondary: oklch(54% 0.055 72);
+  --color-chart-tertiary: oklch(56% 0.055 245);
+  --color-graph-edge: oklch(68% 0.018 82);
+  --color-graph-node: oklch(97.5% 0.008 82);
+  --color-overlay: oklch(16% 0.01 82 / 0.38);
+
+  --font-display:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-body:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --space-3xs: 2px;
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 40px;
+  --space-3xl: 64px;
+
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-md: 15px;
+  --text-lg: 18px;
+  --text-xl: 24px;
+  --text-2xl: clamp(28px, 2.1vw, 34px);
+
+  --radius-control: 5px;
+  --radius-panel: 7px;
+  --radius-round: 999px;
+  --rule-hairline: 1px;
+
+  --dur-fast: 100ms;
+  --dur-ui: 150ms;
+  --ease-ui: cubic-bezier(0.2, 0, 0, 1);
+
+  --z-base: 1;
+  --z-raised: 10;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-sticky-nav: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+
+  /* Backwards-compatible XiaozhuWork aliases. */
+  --tu-blue: var(--color-accent);
+  --tu-blue-strong: var(--color-accent-hover);
+  --tu-blue-soft: var(--color-accent-soft);
+  --tu-action: var(--color-accent);
+  --tu-action-hover: var(--color-accent-hover);
+  --tu-action-active: var(--color-accent-active);
+  --tu-action-contrast: var(--color-accent-ink);
+  --tu-action-surface: var(--color-paper-2);
+  --tu-action-surface-hover: var(--color-paper-3);
+  --tu-action-surface-active: var(--color-rule);
+  --tu-action-border: var(--color-rule-strong);
+  --tu-focus-ring: var(--color-focus);
+  --tu-ink: var(--color-ink);
+  --tu-muted: var(--color-muted);
+  --tu-border: var(--color-rule);
+  --tu-surface: var(--color-paper-2);
+  --tu-bg: var(--color-paper);
+  --tu-subtle-surface: var(--color-paper-3);
+  --tu-quiet-surface: color-mix(
+    in oklch,
+    var(--color-paper-3) 72%,
+    var(--color-rule)
+  );
+  --tu-warning-surface: var(--color-warning-soft);
+  --tu-warning-ink: var(--color-warning-ink);
+  --tu-danger-surface: var(--color-danger-soft);
+  --tu-danger-ink: var(--color-danger-ink);
+  --tu-success-surface: var(--color-success-soft);
+  --tu-success-ink: var(--color-success-ink);
+  --tu-star: var(--color-star);
+  --tu-danger: var(--color-danger);
+  --tu-warning: var(--color-warning);
+  --tu-success: var(--color-success);
+  --tu-radius: var(--radius-panel);
+  --tu-shadow: none;
+
+  --van-button-primary-color: var(--tu-action-contrast);
+  --van-button-primary-background: var(--tu-action);
+  --van-button-primary-border-color: var(--tu-action);
+  --van-button-default-color: var(--tu-ink);
+  --van-button-default-background: var(--tu-action-surface);
+  --van-button-default-border-color: var(--tu-action-border);
+  --van-button-plain-background: var(--tu-action-surface);
+  --van-button-radius: var(--radius-control);
+  --van-button-disabled-opacity: 0.46;
+}
+
+:root[data-theme="dark"] {
+  --color-paper: oklch(15.5% 0.012 82);
+  --color-paper-2: oklch(19% 0.014 82);
+  --color-paper-3: oklch(22.5% 0.015 82);
+  --color-rule: oklch(31% 0.014 82);
+  --color-rule-strong: oklch(43% 0.016 82);
+  --color-muted: oklch(72% 0.014 82);
+  --color-ink-2: oklch(84% 0.01 82);
+  --color-ink: oklch(94% 0.008 82);
+  --color-accent: oklch(72% 0.065 158);
+  --color-accent-hover: oklch(78% 0.058 158);
+  --color-accent-active: oklch(65% 0.06 158);
+  --color-accent-soft: oklch(27% 0.028 158);
+  --color-accent-ink: oklch(17% 0.014 158);
+  --color-focus: oklch(76% 0.07 158);
+  --color-danger: oklch(74% 0.12 28);
+  --color-danger-soft: oklch(27% 0.045 28);
+  --color-danger-ink: oklch(86% 0.07 28);
+  --color-warning: oklch(75% 0.09 75);
+  --color-warning-soft: oklch(27% 0.035 75);
+  --color-warning-ink: oklch(86% 0.055 75);
+  --color-success: oklch(72% 0.07 150);
+  --color-success-soft: oklch(26% 0.035 150);
+  --color-success-ink: oklch(86% 0.05 150);
+  --color-star: oklch(77% 0.1 75);
+  --color-chart-primary: oklch(72% 0.06 158);
+  --color-chart-secondary: oklch(72% 0.055 72);
+  --color-chart-tertiary: oklch(70% 0.045 245);
+  --color-graph-edge: oklch(48% 0.018 82);
+  --color-graph-node: oklch(20% 0.014 82);
+  --color-overlay: oklch(8% 0.006 82 / 0.66);
+
+  --van-background: var(--tu-bg);
+  --van-background-2: var(--tu-surface);
+  --van-text-color: var(--tu-ink);
+  --van-text-color-2: var(--tu-muted);
+  --van-text-color-3: var(--color-rule-strong);
+  --van-border-color: var(--tu-border);
+  --van-cell-background: var(--tu-surface);
+  --van-field-input-text-color: var(--tu-ink);
+  --van-field-placeholder-text-color: var(--tu-muted);
+  --van-field-label-color: var(--tu-ink);
+  --van-field-error-message-color: var(--tu-danger);
+  --van-popup-background: var(--tu-surface);
+  --van-dialog-background: var(--tu-surface);
+  color-scheme: dark;
+}

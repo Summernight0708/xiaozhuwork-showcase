@@ -4,6 +4,20 @@
 
 **我在 AI 辅助下基本独立完成产品开发，推进外测，并根据用户反馈持续完善功能。**
 
+## 源码与本地运行
+
+[查看完整应用源码与运行说明](app/README.md)
+
+`app/` 包含 Web 前端、Ops 管理界面、Supabase 数据库迁移与 Edge Functions、Android 工程、测试及构建脚本。
+
+```bash
+git clone https://github.com/Summernight0708/xiaozhuwork-showcase.git
+cd xiaozhuwork-showcase/app
+corepack pnpm install --frozen-lockfile
+```
+
+按[运行说明](app/README.md)配置自己的 Supabase 环境后，执行 `corepack pnpm dev` 启动产品。
+
 ## 从实际协作问题出发
 
 小组协作中，任务分配杂乱、贡献不清，成员需要反复询问进度和确认成果。小猪作业围绕这些问题，将负责人、任务要求、提交材料与验收结果集中到同一个项目中。

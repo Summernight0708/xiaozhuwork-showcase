@@ -1,0 +1,11 @@
+packages:
+  - .
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+
+minimumReleaseAgeExclude:
+  - "@capacitor/core@8.5.3"
+  - "@capacitor/android@8.5.3"
+  - "@capacitor/cli@8.5.3"
