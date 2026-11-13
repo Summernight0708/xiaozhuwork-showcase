@@ -2,17 +2,17 @@
 
 ## 项目结构
 
-| 目录 | 内容 |
-| --- | --- |
-| `src/` | Vue Web 应用：项目、成员、任务、提交、验收、文件、贡献与报告 |
-| `src-ops/` | Ops 管理界面 |
-| `src-shared/` | 共享类型与工具 |
-| `supabase/migrations/` | PostgreSQL 数据库迁移、业务函数与权限策略 |
-| `supabase/functions/` | Edge Functions 与共享后端逻辑 |
-| `supabase/tests/` | 数据库与 Edge Function 测试 |
-| `android/` | Capacitor Android 工程 |
-| `tests/` | 单元、端到端及专项测试 |
-| `scripts/` | 构建、发布检查及开发工具 |
+| 目录                   | 内容                                                         |
+| ---------------------- | ------------------------------------------------------------ |
+| `src/`                 | Vue Web 应用：项目、成员、任务、提交、验收、文件、贡献与报告 |
+| `src-ops/`             | Ops 管理界面                                                 |
+| `src-shared/`          | 共享类型与工具                                               |
+| `supabase/migrations/` | PostgreSQL 数据库迁移、业务函数与权限策略                    |
+| `supabase/functions/`  | Edge Functions 与共享后端逻辑                                |
+| `supabase/tests/`      | 数据库与 Edge Function 测试                                  |
+| `android/`             | Capacitor Android 工程                                       |
+| `tests/`               | 单元、端到端及专项测试                                       |
+| `scripts/`             | 构建、发布检查及开发工具                                     |
 
 ## 环境
 
@@ -82,3 +82,7 @@ corepack pnpm android:debug
 ```
 
 命令对应的具体工具和参数见 `package.json`。
+
+## 开发工具
+
+[报告生成探测工具](docs/development-tools.md)介绍了 PDF 生成和本地 Edge Runtime 探测脚本的用途、准备条件与输出。

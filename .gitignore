@@ -5,6 +5,7 @@
 **/coverage/
 **/test-results/
 **/playwright-report/
+**/.tmp/
 **/*.tsbuildinfo
 **/.env
 **/.env.*

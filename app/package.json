@@ -11,7 +11,7 @@
     "build:ops": "vite build --config vite.ops.config.ts",
     "smoke:preview": "node scripts/smoke-preview.mjs",
     "preview": "vite preview",
-    "lint": "eslint . --max-warnings=0 && prettier --check \"src/**/*.{ts,vue,css}\" \"src-ops/**/*.{ts,vue,css,html}\" \"src-shared/**/*.ts\" \"tests/**/*.ts\" \"scripts/**/*.mjs\" \"*.{json,ts,js,yaml,yml,html}\" \".github/**/*.{yaml,yml}\" && python scripts/check-xiaozhuwork-brand.py",
+    "lint": "eslint . --max-warnings=0 && prettier --check --end-of-line auto \"src/**/*.{ts,vue,css}\" \"src-ops/**/*.{ts,vue,css,html}\" \"src-shared/**/*.ts\" \"tests/**/*.ts\" \"scripts/**/*.mjs\" \"*.{json,ts,js,yaml,yml,html}\" \"../.github/**/*.{yaml,yml}\" && python scripts/check-xiaozhuwork-brand.py",
     "format": "prettier --write .",
     "typecheck": "vue-tsc --noEmit -p tsconfig.app.json",
     "typecheck:ops": "vue-tsc --noEmit -p tsconfig.ops.json",
